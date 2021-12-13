@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using DbControlCore.Helpers;
 using DbControlCore.Models;
@@ -36,19 +36,25 @@ namespace DbControlCore.Services
 
         private static void GenerateDatabaseFolder(string name)
         {
-            var location = $"./{Constants.Configurations.RootFolder}/{name}";
+            ConsoleHelper.WriteInfo($"Creating folder for database '{name}' ...");
+
+            var location = $"{Constants.Configurations.RootFolder}/{name}";
 
             if (!FileSystemHelper.CheckIfDirectoryIsEmpty(location))
-                throw new Exception($"Couldn't create database folder, location already exists. Location: {location}");
+                throw new Exception($"Couldn't create database, there's already a folder with the same name. Location: {location}");
 
             FileSystemHelper.CreateDirectory(location);
 
             GenerateConfigFile(location, name);
+
+            ConsoleHelper.WriteSuccess($"Database '{name}' creation was successful.");
         }
 
 
         private static void GenerateConfigFile(string location, string name = null)
         {
+            ConsoleHelper.WriteInfo($"Creating configuration file at location '{location}' ...");
+
             FileSystemHelper.CreateDirectory(location);
 
             var database = new ConfigModel
@@ -60,6 +66,9 @@ namespace DbControlCore.Services
 
             var fileLocation = FileSystemHelper.CombineLocationPath(location, Constants.Configurations.DatabaseConfigFileName);
             FileSystemHelper.CreateFile(fileLocation, JsonHelper.SerializeObject(database));
+
+
+            ConsoleHelper.WriteSuccess($"Configuration file creation at '{location}' was successful.");
         }
     }
 }

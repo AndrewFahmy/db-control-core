@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Data;
 using System.Collections.Generic;
@@ -32,6 +32,8 @@ namespace DbControlCore.Services
                     ExecuteDatabaseQueries(database);
                 }
 
+                ConsoleHelper.WriteSuccess("All compiled databases have been deployed successfully.");
+
                 UpdateTransactions(true);
             }
             catch
@@ -46,15 +48,16 @@ namespace DbControlCore.Services
         private static void ExecuteDatabaseQueries(DatabaseModel model)
         {
             var connection = new SqlConnection(model.Connection);
+
+            connection.Open();
+
             var transaction = connection.BeginTransaction();
 
             _transactions.Add(model.Name, transaction);
 
             foreach (var query in model.Queries)
             {
-                ConsoleHelper.WriteInfo($"Executing query: {query.Name} for database: {model.Name} ...");
-
-                connection.Open();
+                ConsoleHelper.WriteInfo($"Executing query: '{query.Name}' for database: '{model.Name}' ...");
 
                 using (var cmd = connection.CreateCommand())
                 {
@@ -63,8 +66,6 @@ namespace DbControlCore.Services
 
                     cmd.ExecuteNonQuery();
                 }
-
-                connection.Close();
             }
         }
 
@@ -76,7 +77,7 @@ namespace DbControlCore.Services
 
                 else transaction.Rollback();
 
-                transaction.Connection.Dispose();
+                transaction.Connection?.Dispose();
             }
         }
     }

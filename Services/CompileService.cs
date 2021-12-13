@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -30,30 +30,36 @@ namespace DbControlCore.Services
             {
                 var database = directory.ParseDatabaseConfigFile();
 
-                if (database != null)
+                if (database == null)
                 {
-                    if (database.IsEnabled)
+                    ConsoleHelper.WriteWarning($"Couldn't find a configuration file for directory '{directory.Name}'. Directory will be skipped.");
+                    continue;
+                }
+
+                if (database.IsEnabled)
+                {
+                    ConsoleHelper.WriteInfo($"Compiling scripts for database: '{database.Name}' {(includeSkippedFiles ? "(including skipped files)" : string.Empty)}...");
+
+                    database.Queries = CompileDatabase(directory, includeSkippedFiles);
+
+                    if (database.Queries.Count > 0)
                     {
-                        ConsoleHelper.WriteInfo($"Compiling scripts for database: {database.Name} {(includeSkippedFiles ? "(including skipped files)" : string.Empty)}...");
-
-                        database.Queries = CompileDatabase(directory, includeSkippedFiles);
-
                         data.Add(database);
                     }
                     else
                     {
-                        ConsoleHelper.WriteWarning($"Database {database.Name} is not enabled, skipping compilation.");
+                        ConsoleHelper.WriteWarning($"Didn't find any *.sql files in database '{database.Name}', skipping compilation for this database.");
                     }
                 }
                 else
                 {
-                    ConsoleHelper.WriteWarning($"Couldn't find a config file for directory {directory.Name}. Directory will be skipped.");
+                    ConsoleHelper.WriteWarning($"Database '{database.Name}' is not enabled, skipping compilation for this database.");
                 }
             }
 
             FileSystemHelper.DeleteFileIfExists(Constants.Configurations.JsonFileName);
 
-            FileSystemHelper.CreateFile(Constants.Configurations.JsonFileName, JsonHelper.SerializeObject(data));
+            FileSystemHelper.CreateFile(Constants.Configurations.JsonFileName, JsonHelper.SerializeObject(data, writeIndented: false));
 
             ConsoleHelper.WriteSuccess($"Application has finished compiling {directories.Length} folder(s) in {(DateTime.Now - startTime).TotalSeconds} seconds.");
         }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DbControlCore": {
+      "commandName": "Project",
+      "commandLineArgs": "g d test"
+    }
+  }
+}
