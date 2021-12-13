@@ -51,12 +51,11 @@ namespace DbControlCore.Services
         {
             FileSystemHelper.CreateDirectory(location);
 
-            var database = new DatabaseModel
+            var database = new ConfigModel
             {
                 Name = name ?? FileSystemHelper.GetDirectoryName(location),
                 Connection = "",
-                IsEnabled = true,
-                Queries = new List<QueryModel>(0)
+                IsEnabled = true
             };
 
             var fileLocation = FileSystemHelper.CombineLocationPath(location, Constants.Configurations.DatabaseConfigFileName);
