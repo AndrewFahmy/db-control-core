@@ -7,6 +7,7 @@
     <SelfContained>false</SelfContained>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PublishReadyToRun>true</PublishReadyToRun>
+    <AssemblyName>db-control</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
