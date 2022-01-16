@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Data;
 using System.Collections.Generic;
 using DbControlCore.Helpers;
 using DbControlCore.Models;
 using Microsoft.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace DbControlCore.Services
 {
@@ -45,6 +45,22 @@ namespace DbControlCore.Services
         }
 
 
+
+        private static void SplitQueryAndExecuteAll(SqlCommand cmd, string queryText)
+        {
+            var querySplit = Regex.Split(queryText,
+                    Constants.Configurations.BatchSeparatorPattern, RegexOptions.IgnoreCase);
+
+            foreach (var query in querySplit)
+            {
+                if (!string.IsNullOrWhiteSpace(query?.Trim()))
+                {
+                    cmd.CommandText = query;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         private static void ExecuteDatabaseQueries(DatabaseModel model)
         {
             var connection = new SqlConnection(model.Connection);
@@ -61,10 +77,9 @@ namespace DbControlCore.Services
 
                 using (var cmd = connection.CreateCommand())
                 {
-                    cmd.CommandText = query.Text;
                     cmd.Transaction = transaction;
 
-                    cmd.ExecuteNonQuery();
+                    SplitQueryAndExecuteAll(cmd, query.Text);
                 }
             }
         }

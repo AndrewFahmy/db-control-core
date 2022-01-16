@@ -101,7 +101,7 @@ namespace DbControlCore.Services
                 });
             }
 
-            return queries;
+            return queries.OrderBy(o => o.Name).ToList();
         }
     }
 }
