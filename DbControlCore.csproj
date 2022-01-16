@@ -8,6 +8,7 @@
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PublishReadyToRun>true</PublishReadyToRun>
     <AssemblyName>db-control</AssemblyName>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup>
