@@ -30,8 +30,13 @@ namespace DbControlCore
                         GenerationService.Generate(args);
                         break;
 
+                    case "u":
+                    case "update":
+                        UpdateInfoService.Update(args);
+                        break;
+
                     default:
-                        throw new ArgumentException("Invalid command. Applicatin only supports these commands: [compile|c], [exec|e], [generate|g]");
+                        throw new ArgumentException("Invalid command. Applicatin only supports these commands: [compile|c], [exec|e], [generate|g], [update|u]");
                 }
 
                 return 0;

@@ -7,8 +7,8 @@ namespace DbControlCore.Services
 {
     public static class GenerationService
     {
-        private static string _databaseUsage = "DbControlCore.exe g [database|d] <name>";
-        private static string _configUsage = "DbControlCore.exe g [config|c] <location>";
+        private static string _databaseUsage = "db-control.exe g [database|d] <name>";
+        private static string _configUsage = "db-control.exe g [config|c] <location>";
 
         public static void Generate(string[] args)
         {
@@ -30,6 +30,9 @@ namespace DbControlCore.Services
 
                     GenerateConfigFile(args[2]);
                     break;
+
+                default:
+                    throw new Exception("Invalid parameter, the generate command supports only these actions: [database|d], [config|c]");
             }
         }
 
