@@ -38,7 +38,7 @@ namespace DbControlCore
                         break;
 
                     default:
-                        throw new ArgumentException("Invalid command. Applicatin only supports these commands: [compile|c], [exec|e], [generate|g], [update|u]");
+                        throw new ArgumentException("Invalid command. Application only supports these commands: [compile|c], [exec|e], [generate|g], [update|u]");
                 }
 
                 return 0;

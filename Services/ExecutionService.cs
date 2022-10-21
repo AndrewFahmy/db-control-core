@@ -7,7 +7,6 @@ using DbControlCore.Helpers;
 using DbControlCore.Models;
 using Microsoft.Data.SqlClient;
 using System.Text.RegularExpressions;
-using System;
 
 namespace DbControlCore.Services
 {
@@ -33,15 +32,17 @@ namespace DbControlCore.Services
                 foreach (var database in data)
                 {
                     ExecuteDatabaseQueries(database);
+
+                    UpdateDatabaseTransactions(database.Name, shouldCommit: true);
                 }
 
                 ConsoleHelper.WriteSuccess("All compiled databases have been deployed successfully.");
 
-                UpdateTransactions(true);
+                UpdateAllActiveTransactions(shouldCommit: true);
             }
             catch
             {
-                UpdateTransactions(false);
+                UpdateAllActiveTransactions(shouldCommit: false);
 
                 throw;
             }
@@ -88,7 +89,6 @@ namespace DbControlCore.Services
 
                 using (var cmd = transaction.Connection.CreateCommand())
                 {
-                    cmd.CommandTimeout = Convert.ToInt32(TimeSpan.FromMinutes(10).TotalSeconds);
                     cmd.Transaction = transaction;
 
                     SplitQueryAndExecuteAll(cmd, query.Text);
@@ -96,7 +96,19 @@ namespace DbControlCore.Services
             }
         }
 
-        private static void UpdateTransactions(bool shouldCommit)
+        private static void UpdateDatabaseTransactions(string name, bool shouldCommit)
+        {
+            if (_transactions.TryGetValue(name, out IDbTransaction transaction) == false) return;
+
+            if (shouldCommit) transaction.Commit();
+            else transaction.Rollback();
+
+            transaction.Connection?.Dispose();
+
+            _transactions.Remove(name);
+        }
+
+        private static void UpdateAllActiveTransactions(bool shouldCommit)
         {
             foreach (var transaction in _transactions.Values)
             {
