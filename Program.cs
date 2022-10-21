@@ -23,7 +23,7 @@ namespace DbControlCore
                         break;
 
                     case "e":
-                    case "exec":
+                    case "execute":
                         ExecutionService.Execute(args);
                         break;
 
@@ -38,7 +38,7 @@ namespace DbControlCore
                         break;
 
                     default:
-                        throw new ArgumentException("Invalid command. Application only supports these commands: [compile|c], [exec|e], [generate|g], [update|u]");
+                        throw new ArgumentException("Invalid command. Application only supports these commands: [compile|c], [execute|e], [generate|g], [update|u]");
                 }
 
                 return 0;
